@@ -1,0 +1,127 @@
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router'
+import { Plus } from 'lucide-react'
+import { api, watchJob } from '../api'
+import AreaMap from '../components/AreaMap'
+import JobForm from '../components/JobForm'
+import JobTimeline from '../components/JobTimeline'
+import PixelInspector from '../components/PixelInspector'
+import ResultsPanel from '../components/ResultsPanel'
+import { forgetCogs } from '../lib/cog'
+import { LANDSCAPE_PHONE, PHONE, useMediaQuery } from '../lib/useMediaQuery'
+import { todayIso, yearAgoIso } from '../lib/format'
+import { useServerConfig } from '../useServerConfig'
+
+export default function Workspace() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const config = useServerConfig()
+  const [bbox, setBbox] = useState(null)
+  const [drawing, setDrawing] = useState(false)
+  const [job, setJob] = useState(null)
+  const [data, setData] = useState(null)
+  const [overlays, setOverlays] = useState([])
+  const [point, setPoint] = useState(null)
+  const [error, setError] = useState(null)
+  const [dates, setDates] = useState(() => [yearAgoIso(), todayIso()])
+  const [coverage, setCoverage] = useState(null)
+  const [panelOpen, setPanelOpen] = useState(true)
+  const isPhone = useMediaQuery(PHONE)
+  const isLandscape = useMediaQuery(LANDSCAPE_PHONE)
+  const sheet = isPhone && !isLandscape   // phones in portrait: the panel is a bottom sheet over the map
+
+  // Sheet rules: get out of the way to draw or inspect; come back with the result
+  // (a drawn box reopens it in onBbox; cancelling a drawing leaves it as it is).
+  useEffect(() => { if (sheet && drawing) setPanelOpen(false) }, [sheet, drawing])
+  useEffect(() => { if (sheet && id) setPanelOpen(true) }, [sheet, id])
+  useEffect(() => { if (sheet && point) setPanelOpen(false) }, [sheet, point])
+
+  // Where EMIT data exists for the chosen dates (shown on the map while choosing an area).
+  useEffect(() => {
+    if (id) return undefined
+    let live = true
+    const t = setTimeout(() => {
+      api.coverage(dates[0], dates[1]).then((c) => live && setCoverage(c)).catch(() => live && setCoverage(null))
+    }, 250)
+    return () => { live = false; clearTimeout(t) }
+  }, [id, dates])
+
+  // Follow the job live (SSE, polling fallback) while it runs.
+  useEffect(() => {
+    setJob(null); setData(null); setOverlays([]); setPoint(null); setError(null)
+    if (!id) return undefined
+    let stop = () => {}
+    api.job(id).then((j) => {
+      setJob(j); setBbox(j.bbox)
+      if (!j.final) stop = watchJob(id, setJob)
+    }).catch((e) => setError(e.status === 404 ? 'This job does not exist or is not yours.' : e.message))
+    return () => stop()
+  }, [id])
+
+  const loadLayers = useCallback(() => {
+    if (!id) return
+    forgetCogs()
+    api.layers(id).then(setData).catch((e) => setError(e.message))
+  }, [id])
+
+  const hasMaps = job && job.task_states?.some((t) => t.state === 'DONE')
+  const finalAndReady = job && (job.final || hasMaps)
+  useEffect(() => { if (finalAndReady) loadLayers() }, [finalAndReady, job?.status, loadLayers])
+
+  // Presigned URLs expire: refresh them shortly before they do.
+  useEffect(() => {
+    if (!data?.expires_in_s) return undefined
+    const t = setTimeout(loadLayers, Math.max(60, data.expires_in_s - 120) * 1000)
+    return () => clearTimeout(t)
+  }, [data, loadLayers])
+
+  const onOverlay = useCallback((o) => setOverlays(o), [])
+  const onBbox = useCallback((b) => { setBbox(b); if (sheet) setPanelOpen(true) }, [sheet])
+  const cancel = async () => { try { setJob(await api.cancelJob(id)) } catch (e) { setError(e.message) } }
+
+  if (!config) return <div className="page muted">Loading…</div>
+  return (
+    <div className="workspace">
+      <aside id="panel" className={`sidebar${sheet ? ' sheet' : ''}${sheet && panelOpen ? ' open' : ''}`}>
+        {sheet && (
+          <button type="button" className="sheet-handle" aria-expanded={panelOpen} aria-controls="panel"
+                  onClick={() => setPanelOpen((o) => !o)}>
+            <span className="grip" aria-hidden="true" />
+            <span>{panelOpen ? 'Show map' : id ? 'Mineral maps & results' : 'New mineral analysis'}</span>
+          </button>
+        )}
+        {/* inert while the sheet is shut: its off-screen controls must not take focus or be read out */}
+        <div className="sheet-body" inert={sheet && !panelOpen}>
+        {id ? (
+          <>
+            <button className="btn" onClick={() => navigate('/')}><Plus size={14} /> New mineral analysis</button>
+            {error && <div className="notice error">{error}</div>}
+            {job && <JobTimeline job={job} onCancel={cancel} />}
+            {job && data && <ResultsPanel job={job} data={data} onOverlay={onOverlay} onRefresh={loadLayers} />}
+          </>
+        ) : (
+          <>
+            <div>
+              <h1>Mineral Analysis Studio</h1>
+              <p className="secondary">
+                Identify and map surface minerals from NASA EMIT hyperspectral spectroscopy.
+                Derives dominant mineral classification, confidence, spectral quality, and fractional abundances against the USGS Spectral Library.
+              </p>
+            </div>
+            <JobForm config={config} bbox={bbox} setBbox={setBbox} drawing={drawing} setDrawing={setDrawing}
+                     dates={dates} setDates={setDates} coverage={coverage}
+                     onSubmitted={(j) => navigate(`/jobs/${j.job_id}`)} />
+          </>
+        )}
+        </div>
+      </aside>
+      <AreaMap region={config.allowed_region} maxDeg={config.max_bbox_deg} bbox={bbox} onBbox={onBbox}
+               drawing={drawing} setDrawing={setDrawing} overlays={overlays} marker={point}
+               coverage={id ? null : coverage}
+               onInspect={data ? (lat, lon) => setPoint([lat, lon]) : null}>
+        {data && !point && <div className="map-hint">Click the map to inspect mineral spectra and abundances at any point</div>}
+        {data && <PixelInspector point={point} layers={data.layers} onClose={() => setPoint(null)} />}
+      </AreaMap>
+    </div>
+  )
+}

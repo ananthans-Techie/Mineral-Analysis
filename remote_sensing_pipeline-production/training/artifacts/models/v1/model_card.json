@@ -1,0 +1,164 @@
+{
+  "model": "HydraNet",
+  "architecture": "mlp",
+  "version": "v1",
+  "format": "onnx",
+  "opset": 17,
+  "file": "hydra.onnx",
+  "bytes": 2062599,
+  "parameters": 502030,
+  "feature_spec_hash": "be8eb2b9cf99ce42",
+  "git_sha": "8e63e41",
+  "trained_to_reproduce": {
+    "mineral": "SAM class (0.20 rad -> unknown) + SMA/FCLS abundance + quality (services/mineral_analysis)",
+    "agriculture": "PROSAIL LUT inversion, k=20 inverse-distance (services/rtm_inversion approach)",
+    "thermal": "ThermalAnomalyDetector global/local z, UHI p80/p20, hotspot p95 (services/thermal)"
+  },
+  "onnx_vs_torch_max_abs_diff": {
+    "agri": 0.00011444091796875,
+    "mineral": 1.2814998626708984e-06,
+    "thermal": 1.9431114196777344e-05
+  },
+  "gates": {
+    "mineral_val.class_agreement": {
+      "value": 0.99961,
+      "threshold": 0.98,
+      "passed": true
+    },
+    "mineral_val.abundance_mae": {
+      "value": 0.00207,
+      "threshold": 0.03,
+      "passed": true
+    },
+    "mineral_val.quality_mae": {
+      "value": 0.00261,
+      "threshold": 0.03,
+      "passed": true
+    },
+    "mineral_real.class_agreement": {
+      "value": 1.0,
+      "threshold": 0.97,
+      "passed": true
+    },
+    "mineral_real.abundance_mae": {
+      "value": 0.00292,
+      "threshold": 0.05,
+      "passed": true
+    },
+    "mineral_real.quality_mae": {
+      "value": 0.0041,
+      "threshold": 0.05,
+      "passed": true
+    },
+    "mineral_real_holdout.class_agreement": {
+      "value": 0.99992,
+      "threshold": 0.97,
+      "passed": true
+    },
+    "mineral_real_holdout.abundance_mae": {
+      "value": 0.00147,
+      "threshold": 0.05,
+      "passed": true
+    },
+    "mineral_real_holdout.quality_mae": {
+      "value": 0.00177,
+      "threshold": 0.05,
+      "passed": true
+    },
+    "agri_val.r2_min_core": {
+      "value": 0.97017,
+      "threshold": 0.95,
+      "passed": true
+    },
+    "agri_csv.r2_min_core": {
+      "value": 0.9727,
+      "threshold": 0.95,
+      "passed": true
+    },
+    "thermal_val.global_agreement": {
+      "value": 0.99957,
+      "threshold": 0.99,
+      "passed": true
+    },
+    "thermal_val.uhi_agreement": {
+      "value": 0.99915,
+      "threshold": 0.99,
+      "passed": true
+    },
+    "thermal_val.hot_agreement": {
+      "value": 0.99967,
+      "threshold": 0.99,
+      "passed": true
+    },
+    "thermal_val.local_agreement": {
+      "value": 0.99987,
+      "threshold": 0.99,
+      "passed": true
+    }
+  },
+  "all_gates_passed": true,
+  "train_args": {
+    "data": "artifacts/data",
+    "out": "artifacts/models",
+    "version": "v1",
+    "steps": 30000,
+    "batch": 512,
+    "lr": 0.002,
+    "eval_every": 3000,
+    "threads": 8,
+    "seed": 1,
+    "arch": "mlp"
+  },
+  "data_manifest": {
+    "spec_hash": "be8eb2b9cf99ce42",
+    "seed": 42,
+    "mineral": {
+      "n": 464076,
+      "n_val": 46407,
+      "by_source": {
+        "owner_usgs": 62400,
+        "usgs_mixtures": 200000,
+        "owner_sample": 2000,
+        "real_emit": 199676
+      },
+      "real_training_scenes": [
+        "EMIT_L2A_RFL_002_20230822T192555",
+        "EMIT_L2A_RFL_002_20230826T175048",
+        "EMIT_L2A_RFL_002_20230927T214607",
+        "EMIT_L2A_RFL_002_20231005T183438",
+        "EMIT_L2A_RFL_002_20231015T215209"
+      ],
+      "real_holdout_scene": "EMIT_L2A_RFL_002_20231015T215146",
+      "eval_sets": {
+        "mineral_real": 2000,
+        "mineral_real_holdout": 38651
+      },
+      "class_counts": {
+        "alunite": 19119,
+        "calcite": 15462,
+        "chlorite": 7866,
+        "dolomite": 19367,
+        "goethite": 9496,
+        "gypsum": 74750,
+        "hematite": 9519,
+        "illite": 7331,
+        "kaolinite": 11255,
+        "montmorillonite": 15424,
+        "muscovite": 16559,
+        "quartz": 233833,
+        "unknown": 24095
+      }
+    },
+    "agri": {
+      "n_lut": 100000,
+      "n_train": 200000,
+      "seconds": 29.3
+    },
+    "thermal": {
+      "n": 1445055,
+      "scenes": 400,
+      "val_scenes": 40
+    }
+  },
+  "created_at": "2026-10-21T10:03:18Z"
+}

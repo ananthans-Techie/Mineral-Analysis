@@ -1,0 +1,27 @@
+# One set of versions for every Python service image (pip install -c constraints.txt).
+numpy==1.26.4
+scipy==1.13.1
+numba==0.60.0
+llvmlite==0.43.0
+onnxruntime==1.20.1
+zarr==2.17.2
+numcodecs==0.12.1
+dask==2024.8.0
+s3fs==2026.6.0
+fsspec==2026.6.0
+aiobotocore==3.9.2
+boto3==1.43.106
+botocore==1.43.106
+rasterio==1.4.4
+pillow==13.0.0
+confluent-kafka==2.5.3
+pydantic==2.9.2
+redis==5.0.8
+prometheus-client==0.20.0
+requests==2.33.0
+cryptography==50.0.2
+netCDF4==1.7.1.post2
+pyarrow==23.0.1
+prosail==2.0.5
+pytest==9.0.3
+pandas==2.2.3

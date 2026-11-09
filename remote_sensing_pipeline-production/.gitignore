@@ -1,0 +1,37 @@
+.env
+.env.*
+!.env.example
+# Google OAuth client downloads and other credential files
+client_secret*.json
+*credentials*.json
+*.pth
+*.pkl
+*.npy
+*.npz
+*.zarr
+*.nc
+*.tif
+*.h5
+__pycache__/
+.pytest_cache/
+*.pyc
+.DS_Store
+node_modules/
+dist/
+build/
+*.log
+
+# terraform
+**/.terraform/
+*.tfstate*
+*.tfvars
+!*.tfvars.example
+backend.hcl
+# training data and local tooling
+training/artifacts/data/*
+!training/artifacts/data/agri_lut.npz
+frontend/node_modules/
+*.egg-info/
+# generated report output (figures, screenshots, job records of test accounts)
+docs/report/build/
+docs/hf_space/build/

@@ -1,0 +1,16 @@
+# =============================================================
+# OWNER: ANANTAHANARAYANAN
+# =============================================================
+# Science
+numpy==1.26.4
+scipy==1.13.1
+# Dask streams the cube chunk by chunk; zarr 2.x matches the ingestion image.
+dask[array]==2024.8.0
+zarr==2.17.2
+# zarr's codecs. Unpinned, pip picks 0.16, which is far newer than zarr 2.17.
+numcodecs==0.12.1
+# Reads/writes Zarr on MinIO or S3 directly, no local download.
+s3fs==2026.6.0
+# Landsat GeoTIFFs (thermal/)
+rasterio==1.4.4
+# Kafka

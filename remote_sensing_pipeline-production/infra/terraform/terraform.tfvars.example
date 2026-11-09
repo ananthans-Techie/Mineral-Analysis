@@ -1,0 +1,21 @@
+# Copy to terraform.tfvars (gitignored) and fill in every CHANGE_ME.
+name                  = "CHANGE_ME"             # bucket = hyperspectral-<name>-prod (globally unique)
+# Domain options:
+# Option 1 (RECOMMENDED - $0 domain cost): Leave domain_name and route53_zone_name empty ("").
+#   AWS CloudFront provides https://<id>.cloudfront.net with built-in free SSL.
+# Option 2 (Custom domain): e.g. domain_name = "maps.example.com", route53_zone_name = "example.com"
+domain_name           = ""
+route53_zone_name     = ""
+alert_email           = "CHANGE_ME"             # budget alerts
+admin_email           = "CHANGE_ME"             # your Google account: becomes admin
+allowed_emails        = []                      # e.g. ["friend@gmail.com"]
+allowed_email_domains = []                          # e.g. ["yourlab.org"] (Google Workspace) or ["gmail.com"]
+# open_signup         = false                     # true = any Google account may sign in
+github_repo           = "aaron43210/remote_sensing_pipeline"
+# github_repo_ids     = "owner@ownerId/repo@repoId"  # optional: GitHub's immutable form, from CloudTrail (see SETUP_AWS.md)
+# instance_type     = "m7i-flex.large"          # 8 GB x86; the Free plan allows only flex/micro/small types
+# office_hours_only = true                      # run only run_start_hour..run_stop_hour (Pacific) to save credits
+# run_start_hour    = 8
+# run_stop_hour     = 20
+# run_days          = "*"                       # "MON-FRI" = weekdays only (cheapest)
+# budget_usd        = 45
