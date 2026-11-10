@@ -81,51 +81,46 @@ The frontend codebase has been prepared and verified:
 
 ## 3. Cloudflare Pages Deployment Procedures
 
-Cloudflare Pages provides two deployment methods on the Free Plan. **Option A (Git Integration)** is recommended for automatic deployments upon Git push.
+Cloudflare Pages provides two deployment methods on the Free Plan. **Option A (Git Integration)** is recommended for continuous, automated deployments.
 
 ### Option A: Cloudflare Pages Git Integration (Recommended)
 
 1. **Sign in to Cloudflare**:
    - Go to [dash.cloudflare.com](https://dash.cloudflare.com/) and log in (or create a free account).
 2. **Navigate to Pages**:
-   - In the left sidebar, click **Workers & Pages** $\to$ **Create application** $\to$ **Pages** $\to$ **Connect to Git**.
+   - In the left sidebar, click **Compute (Workers & Pages)** $\to$ **Create application** $\to$ **Pages** $\to$ **Connect to Git**.
 3. **Connect GitHub**:
-   - Select your GitHub account and authorize access to repository:
-     `https://github.com/ananthans-Techie/Mineral-Analysis`
-4. **Configure Build Settings**:
-   - **Project Name**: `mineral-analysis-platform`
-   - **Production Branch**: `main`
+   - Click **Connect GitHub**.
+   - Authorize access to your repository:
+     `ananthans-Techie/Mineral-Analysis`
+4. **Configure Build Settings (Verified & Exact)**:
+   - **Project Name**: `mineral-analysis-platform` (Generates: `https://mineral-analysis-platform.pages.dev`)
+   - **Production Branch**: `main` (Latest commit: `3a4c407`)
    - **Framework Preset**: `Vite`
    - **Root Directory**: `remote_sensing_pipeline-production/frontend`
    - **Build Command**: `npm run build`
    - **Build Output Directory**: `dist`
 5. **Environment Variables**:
-   - None strictly required for public static mode.
-   - (Optional) `NODE_VERSION`: `22`
+   - None required. (Optionally set `NODE_VERSION`: `22` if desired).
 6. **Deploy**:
    - Click **Save and Deploy**.
-   - Cloudflare will build the frontend and provide a free `*.pages.dev` subdomain (e.g., `mineral-analysis-platform.pages.dev`).
+   - Cloudflare will clone the repo, install dependencies from `remote_sensing_pipeline-production/frontend`, execute `npm run build`, and deploy the production bundle to `https://mineral-analysis-platform.pages.dev`.
 
 ---
 
-### Option B: Cloudflare Pages Direct Upload (Manual / CLI)
+### Option B: Direct Terminal / CLI Upload (Wrangler)
 
-If you prefer deploying the pre-built `dist/` directory directly without connecting GitHub:
-
-#### Method 1: Web Drag-and-Drop
-1. In Cloudflare Dashboard, go to **Workers & Pages** $\to$ **Create application** $\to$ **Pages** $\to$ **Direct Upload**.
-2. Set Project Name to `mineral-analysis-platform`.
-3. Drag and drop the local folder:
-   `C:\Users\sanan\OneDrive\Documents\Spatial Big Data\Project\Mineral-Analysis\remote_sensing_pipeline-production\frontend\dist`
-4. Click **Deploy site**.
-
-#### Method 2: Wrangler CLI
-Run from the frontend directory:
-```powershell
-cd "C:\Users\sanan\OneDrive\Documents\Spatial Big Data\Project\Mineral-Analysis\remote_sensing_pipeline-production\frontend"
-npx wrangler pages deploy dist --project-name=mineral-analysis-platform
-```
-*(Requires running `npx wrangler login` in a browser window to authenticate with your Cloudflare account).*
+If you prefer terminal-driven deployment:
+1. Authenticate with your Cloudflare account:
+   ```powershell
+   npx wrangler login
+   ```
+   *(A browser window opens to authorize Wrangler with 1 click).*
+2. Deploy the pre-built `dist` folder:
+   ```powershell
+   cd "C:\Users\sanan\OneDrive\Documents\Spatial Big Data\Project\Mineral-Analysis"
+   npx wrangler pages deploy "remote_sensing_pipeline-production/frontend/dist" --project-name=mineral-analysis-platform
+   ```
 
 ---
 
