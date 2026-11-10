@@ -1,0 +1,7 @@
+{
+  "name": "mineral-analysis-platform",
+  "compatibility_date": "2026-11-10",
+  "assets": {
+    "directory": "./dist"
+  }
+}
