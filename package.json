@@ -1,0 +1,11 @@
+{
+  "name": "mineral-analysis-platform-root",
+  "private": true,
+  "workspaces": [
+    "remote_sensing_pipeline-production/frontend"
+  ],
+  "scripts": {
+    "build": "npm --prefix remote_sensing_pipeline-production/frontend run build && node -e \"const fs = require('fs'); fs.cpSync('remote_sensing_pipeline-production/frontend/dist', 'dist', {recursive: true});\""
+  }
+}
+
