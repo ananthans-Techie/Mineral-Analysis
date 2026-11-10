@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { isMainLayer, layerLabel, orderLayers, TASKS } from './lib/layers'
+import { LOCAL_DEV_USER } from './api'
 
 describe('Mineral Specialization - Layer configuration', () => {
   it('correctly provides mineral analysis task metadata', () => {
@@ -51,5 +52,15 @@ describe('Mineral Specialization - Layer configuration', () => {
     expect(mineralOnly).toEqual(['mineral_class', 'mineral_confidence'])
     expect(mineralOnly).not.toContain('thermal_lst')
     expect(mineralOnly).not.toContain('agri_LAI')
+  })
+})
+
+describe('Mineral Platform - Local Development Access Mode', () => {
+  it('defines a valid local development researcher identity with admin role', () => {
+    expect(LOCAL_DEV_USER).toBeDefined()
+    expect(LOCAL_DEV_USER.id).toBe(1)
+    expect(LOCAL_DEV_USER.email).toBe('dev@mineralanalysis.local')
+    expect(LOCAL_DEV_USER.name).toBe('Local Researcher')
+    expect(LOCAL_DEV_USER.role).toBe('admin')
   })
 })

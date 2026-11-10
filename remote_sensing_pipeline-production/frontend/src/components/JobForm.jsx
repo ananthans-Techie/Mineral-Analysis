@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AlertTriangle, CheckCircle2, Crosshair, Play } from 'lucide-react'
 import { api, ApiError, newIdempotencyKey } from '../api'
+import { useAuth } from '../auth'
 import { scenesCovering } from '../lib/coverage'
 import { bboxAreaKm2, dateOnly, todayIso } from '../lib/format'
 import EarthdataDialog from './EarthdataDialog'
@@ -15,6 +16,7 @@ function validBox(b, region, maxDeg) {
 }
 
 export default function JobForm({ config, bbox, setBbox, drawing, setDrawing, onSubmitted, dates, setDates, coverage }) {
+  const { isPublic } = useAuth()
   const tasks = useMemo(() => ['mineral'], [])
   const [nasa, setNasa] = useState(null)              // { connected, expired, username, expires_at }
   const [connectFor, setConnectFor] = useState(null)  // why the NASA popup is open: 'mineral', 'submit' or 'change'
@@ -35,6 +37,12 @@ export default function JobForm({ config, bbox, setBbox, drawing, setDrawing, on
 
   async function submit(e) {
     e?.preventDefault()
+    if (isPublic) {
+      setError(
+        'Cluster Pipeline Required: Interactive EMIT hyperspectral scene downloading, calibration, and GPU inference (SAM classification + SMA unmixing) run on the dedicated local cluster. This public static showcase demonstrates interactive mapping and USGS specifications without consuming cluster compute resources.'
+      )
+      return
+    }
     if (!nasa?.connected) {
       setConnectFor('submit')
       return
@@ -171,8 +179,12 @@ export default function JobForm({ config, bbox, setBbox, drawing, setDrawing, on
         </div>
 
         {error && <div className="notice error" role="alert">{error}</div>}
-        <button className="btn primary block" disabled={busy || !bbox || !!boxError || tasks.length === 0}>
-          <Play size={14} /> {busy ? 'Running Mineral Analysis…' : 'Run Mineral Analysis'}
+        <button
+          className="btn primary block"
+          disabled={busy || !bbox || !!boxError || tasks.length === 0}
+          title={isPublic ? 'Live GPU cluster execution runs on dedicated local infrastructure' : undefined}
+        >
+          <Play size={14} /> {busy ? 'Running Mineral Analysis…' : isPublic ? 'Run Mineral Analysis (Cluster Required)' : 'Run Mineral Analysis'}
         </button>
       </form>
       {/* outside the form: it has its own (a token field must not submit the job) */}

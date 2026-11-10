@@ -1,6 +1,8 @@
-import { Navigate, useLocation, useSearchParams } from 'react-router'
-import logo from '../assets/icon.png'
+import { useEffect } from 'react'
+import { Link, Navigate, useLocation, useSearchParams } from 'react-router'
+import { api } from '../api'
 import { useAuth } from '../auth'
+import { useServerConfig } from '../useServerConfig'
 
 // Only same-site paths: never "//evil.example", "/\evil", or an absolute URL (open redirect).
 // The gateway checks it again before redirecting.
@@ -31,29 +33,74 @@ function GoogleMark() {
 }
 
 export default function AuthPage() {
-  const { signedIn, ready } = useAuth()
+  const { signedIn, ready, isPublic } = useAuth()
+  const config = useServerConfig()
   const location = useLocation()
   const [params] = useSearchParams()
   const from = safePath(location.state?.from || params.get('from'))
+  const isDevAuth = config?.local_auth_bypass || import.meta.env.DEV || import.meta.env.VITE_LOCAL_AUTH_BYPASS === 'true'
+
+  useEffect(() => {
+    if (ready && !signedIn && isDevAuth) {
+      api.devLogin().catch(() => {})
+    }
+  }, [ready, signedIn, isDevAuth])
+
   if (ready && signedIn) return <Navigate to={from} replace />
-  const error = ERRORS[params.get('error')] || (params.get('error') ? ERRORS.failed : null)
+
+  const errorParam = params.get('error')
+  const error = (!isDevAuth && !isPublic && errorParam) ? (ERRORS[errorParam] || ERRORS.failed) : null
 
   return (
     <div className="auth">
-      <div className="card">
-        <div className="brand" style={{ gap: 10, marginBottom: 4 }}>
-          <img src={logo} alt="Mineral Analysis Platform Logo" className="brand-logo large" />
-          <span>Mineral Analysis Platform</span>
+      <div className="card auth-card">
+        <div className="auth-brand-container">
+          <img
+            src="/assets/mineral-analysis-logo.png"
+            alt="Mineral Analysis Platform Logo"
+            className="auth-brand-logo"
+          />
         </div>
-        <p className="secondary" style={{ fontSize: 13, marginBottom: 16 }}>
+        <p className="secondary auth-subtitle">
           Hyperspectral Mineral Identification, Classification and Abundance Mapping
         </p>
-        <h1>Sign in</h1>
+        <h1>{isDevAuth ? 'Local Development Access' : isPublic ? 'Mineral Analysis Platform Portal' : 'Sign in'}</h1>
         {error && <div className="notice error" role="alert">{error}</div>}
-        <a className="btn block google" href={`/api/auth/google/login?from=${encodeURIComponent(from)}`}>
-          <GoogleMark /> Sign in with Google
-        </a>
-        <p className="muted" style={{ fontSize: 13 }}>Only approved research accounts can sign in.</p>
+        {isDevAuth ? (
+          <>
+            <button
+              className="btn block primary"
+              onClick={() => api.devLogin().catch(() => {})}
+              style={{ marginTop: 12, justifyContent: 'center' }}
+            >
+              Enter Mineral Studio
+            </button>
+            <p className="muted" style={{ fontSize: 13, marginTop: 12 }}>
+              Local development mode active (Google sign-in bypassed).
+            </p>
+          </>
+        ) : isPublic ? (
+          <>
+            <p className="secondary" style={{ fontSize: 13, marginTop: 8 }}>
+              Live processing workers and high-throughput GPU inference pipelines run on the dedicated local cluster.
+              Explore interactive mapping, satellite swaths, and USGS reference methodology in Mineral Studio.
+            </p>
+            <Link
+              to="/"
+              className="btn block primary"
+              style={{ marginTop: 16, justifyContent: 'center', textDecoration: 'none' }}
+            >
+              Enter Mineral Studio
+            </Link>
+          </>
+        ) : (
+          <>
+            <a className="btn block google" href={`/api/auth/google/login?from=${encodeURIComponent(from)}`}>
+              <GoogleMark /> Sign in with Google
+            </a>
+            <p className="muted" style={{ fontSize: 13 }}>Only approved research accounts can sign in.</p>
+          </>
+        )}
       </div>
     </div>
   )

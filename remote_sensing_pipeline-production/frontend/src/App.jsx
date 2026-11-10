@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { BrowserRouter, HashRouter, Navigate, NavLink, Route, Routes, useLocation } from 'react-router'
 import { Activity, History as HistoryIcon, LogOut, Map } from 'lucide-react'
-import logo from './assets/icon.png'
 import { DEMO, DEMO_NOTE } from './api'
 import { AuthProvider, useAuth } from './auth'
 import AuthPage from './pages/AuthPage'
@@ -13,14 +12,15 @@ import Workspace from './pages/Workspace'
 const Router = DEMO ? HashRouter : BrowserRouter
 
 function RequireAuth({ children }) {
-  const { signedIn, ready } = useAuth()
+  const { signedIn, ready, isPublic } = useAuth()
   const location = useLocation()
   if (!ready) return <div className="page muted">Loading…</div>
+  if (isPublic) return children
   return signedIn ? children : <Navigate to="/login" replace state={{ from: location.pathname }} />
 }
 
 function Shell({ children }) {
-  const { user, logout } = useAuth()
+  const { user, logout, isPublic } = useAuth()
   const location = useLocation()
 
   useEffect(() => {
@@ -40,9 +40,13 @@ function Shell({ children }) {
   return (
     <div className="shell">
       <header className="topbar">
-        <div className="brand">
-          <img src={logo} alt="Mineral Analysis Platform Logo" className="brand-logo" />
-          <span className="brand-name">Mineral Analysis Platform</span>
+        <div className="brand" title="Mineral Analysis Platform">
+          <img
+            src="/assets/mineral-analysis-logo.png"
+            alt="Mineral Analysis Platform Logo"
+            className="brand-logo"
+          />
+          <span className="brand-name sr-only">Mineral Analysis Platform</span>
         </div>
         <nav className="nav">
           <NavLink to="/" end><Map size={14} /> <span className="label">Mineral Studio</span></NavLink>
@@ -51,8 +55,16 @@ function Shell({ children }) {
         </nav>
         <div className="spacer" />
         <span className="user secondary" style={{ fontSize: 13 }}>{user?.name}</span>
-        {!DEMO && <button className="btn small" onClick={logout} aria-label="Sign out"><LogOut size={14} /> <span className="label">Sign out</span></button>}
+        {!DEMO && !isPublic && <button className="btn small" onClick={logout} aria-label="Sign out"><LogOut size={14} /> <span className="label">Sign out</span></button>}
       </header>
+      {isPublic && (
+        <div className="notice demo" role="note">
+          <span>
+            <strong>Public Showcase</strong>: Hyperspectral mineral analysis platform powered by NASA EMIT spectroscopy and USGS endmembers.
+            Live GPU compute pipeline and scene downloading run on the dedicated local cluster.
+          </span>
+        </div>
+      )}
       {DEMO && (
         <div className="notice demo" role="note">
           <span>{DEMO_NOTE} Open a sample under <NavLink to="/jobs">Mineral Jobs</NavLink>. Code:{' '}

@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { api } from '../api'
+import { useAuth } from '../auth'
 import { bboxLabel, when } from '../lib/format'
 import { STATUS_TONE } from '../lib/layers'
 
 export default function History() {
+  const { isPublic } = useAuth()
   const [jobs, setJobs] = useState(null)
   const [next, setNext] = useState(null)
   const [error, setError] = useState(null)
   const load = (before) => api.jobs(before).then((r) => {
-    setJobs((cur) => (before ? [...(cur || []), ...r.jobs] : r.jobs))
+    setJobs((cur) => (before ? [...(cur || []), ...(r.jobs || [])] : (r.jobs || [])))
     setNext(r.next_before || null)
   }).catch((e) => setError(e.message))
   useEffect(() => { load() }, [])
@@ -17,10 +19,17 @@ export default function History() {
     <div className="page"><div className="page-narrow">
       <h1>Mineral Analysis Jobs</h1>
       <p className="secondary">All mineral identification and spectroscopy jobs. Raster outputs are preserved for 180 days.</p>
-      {error && <div className="notice error">{error}</div>}
+      {error && !isPublic && <div className="notice error">{error}</div>}
       <div className="card" style={{ marginTop: 12 }}>
         {!jobs ? <p className="muted">Loading…</p> : jobs.length === 0 ? (
-          <p className="muted">No mineral jobs yet. <Link to="/">Analyze your first area</Link>.</p>
+          isPublic ? (
+            <p className="muted">
+              The cluster job queue is maintained on the private local PostgreSQL database. No public jobs are listed on this static showcase.
+              Explore the platform&apos;s 12 USGS endmembers in <Link to="/system">Platform Status</Link> or draw an area in <Link to="/">Mineral Studio</Link>.
+            </p>
+          ) : (
+            <p className="muted">No mineral jobs yet. <Link to="/">Analyze your first area</Link>.</p>
+          )
         ) : (
           <div className="table-wrap"><table className="data">
             <thead><tr><th>Submitted</th><th className="hide-phone">Coordinates</th><th>Analysis</th><th className="hide-phone">Sensor</th><th>Status</th><th /></tr></thead>

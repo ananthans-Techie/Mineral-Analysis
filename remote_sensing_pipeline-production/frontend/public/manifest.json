@@ -1,0 +1,28 @@
+{
+  "name": "Mineral Analysis Platform",
+  "short_name": "Mineral Analysis",
+  "description": "Hyperspectral mineral identification, classification and abundance mapping from NASA EMIT",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9f9f7",
+  "theme_color": "#1a365d",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "486x486",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+

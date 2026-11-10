@@ -33,16 +33,16 @@ export default function System() {
   const [stats, setStats] = useState(null)
   const [model, setModel] = useState(null)
   const [error, setError] = useState(null)
-  const { user } = useAuth()
+  const { user, isPublic } = useAuth()
   const admin = user?.role === 'admin'
   useEffect(() => {
     const load = () => Promise.all([admin ? api.stats() : Promise.resolve(null), api.model()])
       .then(([s, m]) => { setStats(s); setModel(m) })
-      .catch((e) => setError(e.message))
+      .catch((e) => { if (!isPublic) setError(e.message) })
     load()
     const t = setInterval(load, 15000)
     return () => clearInterval(t)
-  }, [admin])
+  }, [admin, isPublic])
   const card = model?.card || {}
   const mineralTasks24h = (stats?.tasks_24h || []).filter((r) => r.task === 'mineral')
 
@@ -51,9 +51,10 @@ export default function System() {
       <div>
         <h1>Mineral Analysis Platform</h1>
         <p className="secondary">{admin ? 'Processing throughput over the last 24 hours, and mineral spectroscopy model verification.'
+          : isPublic ? 'Scientific methodology, USGS reference library endmembers, and pipeline architecture.'
           : 'Mineral spectroscopy model status and USGS classical method verification.'}</p>
       </div>
-      {error && <div className="notice error">{error}</div>}
+      {error && !isPublic && <div className="notice error">{error}</div>}
       {stats && (
         <div className="card">
           <div className="grid4">
@@ -98,6 +99,29 @@ export default function System() {
             <GateTable title="Training gates (measured on held-out test spectra)" gates={card.gates} />
           </>
         ) : <p className="muted">Train and promote a mineral model.</p>}
+      </div>
+
+      <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <h2 style={{ margin: 0 }}>Pipeline & Deployment Architecture</h2>
+        <p className="secondary">
+          The Mineral Analysis Platform implements a distributed dual-tier architecture:
+        </p>
+        <div className="grid2" style={{ gap: 12, marginTop: 4 }}>
+          <div style={{ padding: '12px 14px', background: 'var(--bg-subtle, #f8fafc)', borderRadius: 6, border: '1px solid var(--border)' }}>
+            <h4 style={{ margin: '0 0 6px 0', fontSize: 14 }}>Public Cloud Edge (Cloudflare Pages)</h4>
+            <p className="muted" style={{ fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+              Static single-page application (SPA) distributed globally across 300+ data centers. Delivers responsive interactive mapping,
+              USGS spectral reference inspection, and zero-latency client-side exploration.
+            </p>
+          </div>
+          <div style={{ padding: '12px 14px', background: 'var(--bg-subtle, #f8fafc)', borderRadius: 6, border: '1px solid var(--border)' }}>
+            <h4 style={{ margin: '0 0 6px 0', fontSize: 14 }}>Computing Cluster (Local / VPS)</h4>
+            <p className="muted" style={{ fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+              Dedicated worker node cluster running Python ingestion workers, Kafka event streaming, PyTorch GPU ML inference,
+              PostgreSQL/PostGIS geospatial database, and MinIO S3 object storage for full-scene GeoTIFF generation.
+            </p>
+          </div>
+        </div>
       </div>
     </div></div>
   )

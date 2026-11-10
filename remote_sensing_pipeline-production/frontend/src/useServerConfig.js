@@ -9,15 +9,20 @@ export function useServerConfig() {
   useEffect(() => {
     if (cached) return
     api.config().then((c) => {
-      const specialized = { ...c, tasks: ['mineral'] }
-      cached = specialized
-      setConfig(specialized)
+      if (c && Array.isArray(c.allowed_region)) {
+        const specialized = { ...c, tasks: ['mineral'] }
+        cached = specialized
+        setConfig(specialized)
+      } else {
+        throw new Error('Non-JSON config response')
+      }
     }).catch(() => {
-      // keep the UI usable if /config is briefly unavailable; the server still enforces its limits
+      // Static / public fallback: keeps the UI usable when no local gateway is connected
       const fallback = {
         allowed_region: [-124.5, 32.5, -114, 42],
         max_bbox_deg: 0.1,
         tasks: ['mineral'],
+        is_public_fallback: true,
       }
       cached = fallback
       setConfig(fallback)
