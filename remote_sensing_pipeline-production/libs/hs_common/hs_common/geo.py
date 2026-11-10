@@ -97,8 +97,21 @@ def png_bytes(rgba):
     return buf.getvalue()
 
 
+def _ensure_rasterio_proj():
+    import os
+    try:
+        import rasterio
+        proj_dir = os.path.join(os.path.dirname(rasterio.__file__), "proj_data")
+        if os.path.isdir(proj_dir):
+            os.environ["PROJ_LIB"] = proj_dir
+            os.environ["PROJ_DATA"] = proj_dir
+    except Exception:
+        pass
+
+
 def cog_bytes(data, transform, crs="EPSG:4326", nodata=None, tags=None, band_names=None):
     """(H, W) or (H, W, B) array -> Cloud-Optimized GeoTIFF bytes."""
+    _ensure_rasterio_proj()
     import rasterio
     from rasterio.enums import Resampling
     from rasterio.shutil import copy as rio_copy
@@ -131,6 +144,7 @@ def cog_bytes(data, transform, crs="EPSG:4326", nodata=None, tags=None, band_nam
 
 def read_cog(path_or_bytes):
     """-> (array (H, W[, B]), transform list, crs str, nodata)."""
+    _ensure_rasterio_proj()
     import rasterio
     from rasterio.io import MemoryFile
 
