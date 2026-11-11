@@ -23,6 +23,7 @@ __pycache__/
 *.zarr
 *.nc
 *.tif
+!**/demo/**/*.tif
 *.h5
 
 # OS specific files

@@ -11,6 +11,7 @@ client_secret*.json
 *.zarr
 *.nc
 *.tif
+!frontend/public/demo/**/*.tif
 *.h5
 __pycache__/
 .pytest_cache/

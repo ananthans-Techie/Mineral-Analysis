@@ -1,0 +1,19 @@
+{
+  "allow_fixtures": false,
+  "allowed_region": [
+    -124.5,
+    32.5,
+    -114,
+    42
+  ],
+  "emit_max_cloud": 40,
+  "env": "local",
+  "local_auth_bypass": true,
+  "max_active_jobs_per_user": 3,
+  "max_bbox_deg": 0.1,
+  "tasks": [
+    "agriculture",
+    "mineral",
+    "thermal"
+  ]
+}

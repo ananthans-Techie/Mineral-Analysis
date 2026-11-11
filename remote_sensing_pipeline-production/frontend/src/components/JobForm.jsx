@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { AlertTriangle, CheckCircle2, Crosshair, Play } from 'lucide-react'
 import { api, ApiError, newIdempotencyKey } from '../api'
 import { useAuth } from '../auth'
@@ -38,9 +39,8 @@ export default function JobForm({ config, bbox, setBbox, drawing, setDrawing, on
   async function submit(e) {
     e?.preventDefault()
     if (isPublic) {
-      setError(
-        'Cluster Pipeline Required: Interactive EMIT hyperspectral scene downloading, calibration, and GPU inference (SAM classification + SMA unmixing) run on the dedicated local cluster. This public static showcase demonstrates interactive mapping and USGS specifications without consuming cluster compute resources.'
-      )
+      setError(null)
+      onSubmitted({ job_id: 'job_a395b0fff6e9481c8478' })
       return
     }
     if (!nasa?.connected) {
@@ -179,13 +179,27 @@ export default function JobForm({ config, bbox, setBbox, drawing, setDrawing, on
         </div>
 
         {error && <div className="notice error" role="alert">{error}</div>}
-        <button
-          className="btn primary block"
-          disabled={busy || !bbox || !!boxError || tasks.length === 0}
-          title={isPublic ? 'Live GPU cluster execution runs on dedicated local infrastructure' : undefined}
-        >
-          <Play size={14} /> {busy ? 'Running Mineral Analysis…' : isPublic ? 'Run Mineral Analysis (Cluster Required)' : 'Run Mineral Analysis'}
-        </button>
+        {isPublic ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+            <button
+              type="submit"
+              className="btn primary block"
+              disabled={busy}
+            >
+              <Play size={14} /> {busy ? 'Loading Mineral Results…' : 'Run Mineral Analysis'}
+            </button>
+            <p className="muted" style={{ fontSize: 11, textAlign: 'center', margin: 0 }}>
+              Showcase Mode: Opens NASA EMIT mineral analysis with 12 distinct USGS mineral colors, spectrum inspector, and abundance charts.
+            </p>
+          </div>
+        ) : (
+          <button
+            className="btn primary block"
+            disabled={busy || !bbox || !!boxError || tasks.length === 0}
+          >
+            <Play size={14} /> {busy ? 'Running Mineral Analysis…' : 'Run Mineral Analysis'}
+          </button>
+        )}
       </form>
       {/* outside the form: it has its own (a token field must not submit the job) */}
       <EarthdataDialog reason={connectFor} status={nasa} onDone={connectDone} />

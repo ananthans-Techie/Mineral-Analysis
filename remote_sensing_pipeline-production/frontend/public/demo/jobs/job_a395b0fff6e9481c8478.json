@@ -1,0 +1,36 @@
+{
+  "job_id": "job_a395b0fff6e9481c8478",
+  "status": "COMPLETED",
+  "error": null,
+  "bbox": [
+    -117.58007839322092,
+    38.207767483602815,
+    -117.48007839322092,
+    38.30776748360282
+  ],
+  "tasks": [
+    "mineral"
+  ],
+  "date_from": "2025-11-11",
+  "date_to": "2026-11-11",
+  "source": "nasa",
+  "model_version": "v1",
+  "reused_from": null,
+  "acquired_emit": "2026-06-01T18:49:05Z",
+  "acquired_landsat": null,
+  "created_at": "2026-11-11T08:16:47.584083Z",
+  "updated_at": "2026-11-11T08:21:35.66736Z",
+  "completed_at": "2026-11-11T08:21:35.66736Z",
+  "task_states": [
+    {
+      "task": "mineral",
+      "stage": "done",
+      "state": "DONE",
+      "message": "",
+      "started_at": "2026-11-11T08:16:49.15959Z",
+      "finished_at": "2026-11-11T08:21:35.66736Z"
+    }
+  ],
+  "progress": 100,
+  "final": true
+}

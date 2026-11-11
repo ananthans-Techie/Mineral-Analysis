@@ -1,0 +1,523 @@
+{
+  "active": true,
+  "card": {
+    "all_gates_passed": true,
+    "architecture": "mlp",
+    "bytes": 2062599,
+    "created_at": "2026-10-21T10:03:18Z",
+    "data_manifest": {
+      "agri": {
+        "n_lut": 100000,
+        "n_train": 200000,
+        "seconds": 29.3
+      },
+      "mineral": {
+        "by_source": {
+          "owner_sample": 2000,
+          "owner_usgs": 62400,
+          "real_emit": 199676,
+          "usgs_mixtures": 200000
+        },
+        "class_counts": {
+          "alunite": 19119,
+          "calcite": 15462,
+          "chlorite": 7866,
+          "dolomite": 19367,
+          "goethite": 9496,
+          "gypsum": 74750,
+          "hematite": 9519,
+          "illite": 7331,
+          "kaolinite": 11255,
+          "montmorillonite": 15424,
+          "muscovite": 16559,
+          "quartz": 233833,
+          "unknown": 24095
+        },
+        "eval_sets": {
+          "mineral_real": 2000,
+          "mineral_real_holdout": 38651
+        },
+        "n": 464076,
+        "n_val": 46407,
+        "real_holdout_scene": "EMIT_L2A_RFL_002_20231015T215146",
+        "real_training_scenes": [
+          "EMIT_L2A_RFL_002_20230822T192555",
+          "EMIT_L2A_RFL_002_20230826T175048",
+          "EMIT_L2A_RFL_002_20230927T214607",
+          "EMIT_L2A_RFL_002_20231005T183438",
+          "EMIT_L2A_RFL_002_20231015T215209"
+        ]
+      },
+      "seed": 42,
+      "spec_hash": "be8eb2b9cf99ce42",
+      "thermal": {
+        "n": 1445055,
+        "scenes": 400,
+        "val_scenes": 40
+      }
+    },
+    "feature_spec_hash": "be8eb2b9cf99ce42",
+    "file": "hydra.onnx",
+    "forced_promotion": false,
+    "format": "onnx",
+    "gates": {
+      "agri_csv.r2_min_core": {
+        "passed": true,
+        "threshold": 0.95,
+        "value": 0.9727
+      },
+      "agri_val.r2_min_core": {
+        "passed": true,
+        "threshold": 0.95,
+        "value": 0.97017
+      },
+      "mineral_real.abundance_mae": {
+        "passed": true,
+        "threshold": 0.05,
+        "value": 0.00292
+      },
+      "mineral_real.class_agreement": {
+        "passed": true,
+        "threshold": 0.97,
+        "value": 1
+      },
+      "mineral_real.quality_mae": {
+        "passed": true,
+        "threshold": 0.05,
+        "value": 0.0041
+      },
+      "mineral_real_holdout.abundance_mae": {
+        "passed": true,
+        "threshold": 0.05,
+        "value": 0.00147
+      },
+      "mineral_real_holdout.class_agreement": {
+        "passed": true,
+        "threshold": 0.97,
+        "value": 0.99992
+      },
+      "mineral_real_holdout.quality_mae": {
+        "passed": true,
+        "threshold": 0.05,
+        "value": 0.00177
+      },
+      "mineral_val.abundance_mae": {
+        "passed": true,
+        "threshold": 0.03,
+        "value": 0.00207
+      },
+      "mineral_val.class_agreement": {
+        "passed": true,
+        "threshold": 0.98,
+        "value": 0.99961
+      },
+      "mineral_val.quality_mae": {
+        "passed": true,
+        "threshold": 0.03,
+        "value": 0.00261
+      },
+      "thermal_val.global_agreement": {
+        "passed": true,
+        "threshold": 0.99,
+        "value": 0.99957
+      },
+      "thermal_val.hot_agreement": {
+        "passed": true,
+        "threshold": 0.99,
+        "value": 0.99967
+      },
+      "thermal_val.local_agreement": {
+        "passed": true,
+        "threshold": 0.99,
+        "value": 0.99987
+      },
+      "thermal_val.uhi_agreement": {
+        "passed": true,
+        "threshold": 0.99,
+        "value": 0.99915
+      }
+    },
+    "git_sha": "8e63e41",
+    "model": "HydraNet",
+    "onnx_vs_torch_max_abs_diff": {
+      "agri": 0.00011444091796875,
+      "mineral": 0.0000012814998626708984,
+      "thermal": 0.000019431114196777344
+    },
+    "opset": 17,
+    "parameters": 502030,
+    "train_args": {
+      "arch": "mlp",
+      "batch": 512,
+      "data": "artifacts/data",
+      "eval_every": 3000,
+      "lr": 0.002,
+      "out": "artifacts/models",
+      "seed": 1,
+      "steps": 30000,
+      "threads": 8,
+      "version": "v1"
+    },
+    "trained_to_reproduce": {
+      "agriculture": "PROSAIL LUT inversion, k=20 inverse-distance (services/rtm_inversion approach)",
+      "mineral": "SAM class (0.20 rad -> unknown) + SMA/FCLS abundance + quality (services/mineral_analysis)",
+      "thermal": "ThermalAnomalyDetector global/local z, UHI p80/p20, hotspot p95 (services/thermal)"
+    },
+    "version": "v1"
+  },
+  "feature_spec_hash": "be8eb2b9cf99ce42",
+  "map_verification": {
+    "aggregate": {
+      "agri_ALA": {
+        "mae": 1.7241985536354205,
+        "mae_worst_scene": 2.1278488636016846,
+        "n": 40422,
+        "nmae": 0.01915776170706023,
+        "r2": 0.9781579233576605,
+        "r2_worst_scene": 0.9498188495635986,
+        "scenes": 8
+      },
+      "agri_Cab": {
+        "mae": 1.8813310866748483,
+        "mae_worst_scene": 2.3216712474823,
+        "n": 40422,
+        "nmae": 0.017103009878862256,
+        "r2": 0.9314034961945146,
+        "r2_worst_scene": 0.7317938804626465,
+        "scenes": 8
+      },
+      "agri_Car": {
+        "mae": 1.11589951042395,
+        "mae_worst_scene": 1.2516175508499146,
+        "n": 40422,
+        "nmae": 0.037196650347465,
+        "r2": 0.8204687885189156,
+        "r2_worst_scene": 0.6335910558700562,
+        "scenes": 8
+      },
+      "agri_Cm": {
+        "mae": 0.000916076272642804,
+        "mae_worst_scene": 0.0012056682026013732,
+        "n": 40422,
+        "nmae": 0.018321525452856077,
+        "r2": 0.9691849485556544,
+        "r2_worst_scene": 0.9069059491157532,
+        "scenes": 8
+      },
+      "agri_Cw": {
+        "mae": 0.0010442718030248797,
+        "mae_worst_scene": 0.0013572031166404486,
+        "n": 40422,
+        "nmae": 0.014918168614641137,
+        "r2": 0.9772017688926045,
+        "r2_worst_scene": 0.9410151243209839,
+        "scenes": 8
+      },
+      "agri_LAI": {
+        "mae": 0.3425249809948613,
+        "mae_worst_scene": 0.3792276382446289,
+        "n": 40422,
+        "nmae": 0.03425249809948613,
+        "r2": 0.7371313290008897,
+        "r2_worst_scene": 0.5063954591751099,
+        "scenes": 8
+      },
+      "mineral_abundance": {
+        "mae": 0.0019375577417770227,
+        "mae_worst_scene": 0.004863934125751257,
+        "n": 56004,
+        "r2": 0.9989054243774569,
+        "r2_worst_scene": 0.99615877866745,
+        "scenes": 8
+      },
+      "mineral_class": {
+        "n": 4667,
+        "pixel_agreement": 1,
+        "pixel_agreement_worst_scene": 1,
+        "scenes": 8
+      },
+      "mineral_quality": {
+        "mae": 0.004038846255137396,
+        "mae_worst_scene": 0.008129573427140713,
+        "n": 4667,
+        "r2": 0.9970201615707915,
+        "r2_worst_scene": 0.9890516996383667,
+        "scenes": 8
+      },
+      "thermal_global_class": {
+        "n": 552123,
+        "pixel_agreement": 0.9996450066380136,
+        "pixel_agreement_worst_scene": 0.9992678889737713,
+        "scenes": 6
+      },
+      "thermal_hotspots": {
+        "n": 553312,
+        "pixel_agreement": 0.9977535278468568,
+        "pixel_agreement_worst_scene": 0.9880779608905516,
+        "scenes": 6
+      },
+      "thermal_local_anomaly": {
+        "n": 553312,
+        "pixel_agreement": 0.9997849314672372,
+        "pixel_agreement_worst_scene": 0.9991184786231067,
+        "scenes": 6
+      },
+      "thermal_uhi_class": {
+        "n": 552123,
+        "pixel_agreement": 0.9984043410616837,
+        "pixel_agreement_worst_scene": 0.9935820943657884,
+        "scenes": 6
+      }
+    },
+    "all_passed": true,
+    "emit_synthetic": {
+      "scenes": 8,
+      "timing": [
+        {
+          "classical_s": 0.064,
+          "nn_s": 0.02,
+          "pixels": 9216
+        },
+        {
+          "classical_s": 0.053,
+          "nn_s": 0.009,
+          "pixels": 9216
+        },
+        {
+          "classical_s": 0.057,
+          "nn_s": 0.008,
+          "pixels": 9216
+        },
+        {
+          "classical_s": 0.052,
+          "nn_s": 0.007,
+          "pixels": 9216
+        },
+        {
+          "classical_s": 0.065,
+          "nn_s": 0.009,
+          "pixels": 9216
+        },
+        {
+          "classical_s": 0.077,
+          "nn_s": 0.009,
+          "pixels": 9216
+        },
+        {
+          "classical_s": 0.069,
+          "nn_s": 0.007,
+          "pixels": 9216
+        },
+        {
+          "classical_s": 0.059,
+          "nn_s": 0.009,
+          "pixels": 9216
+        }
+      ]
+    },
+    "feature_spec_hash": "be8eb2b9cf99ce42",
+    "gates": {
+      "agri_Cab": {
+        "metric": "nmae",
+        "passed": true,
+        "r2_within_scene": 0.9314,
+        "threshold": 0.05,
+        "value": 0.0171
+      },
+      "agri_Cw": {
+        "metric": "nmae",
+        "passed": true,
+        "r2_within_scene": 0.9772,
+        "threshold": 0.05,
+        "value": 0.01492
+      },
+      "agri_LAI": {
+        "metric": "nmae",
+        "passed": true,
+        "r2_within_scene": 0.7371,
+        "threshold": 0.05,
+        "value": 0.03425
+      },
+      "mineral_abundance": {
+        "metric": "mae",
+        "passed": true,
+        "threshold": 0.03,
+        "value": 0.00194
+      },
+      "mineral_class": {
+        "metric": "pixel_agreement",
+        "passed": true,
+        "threshold": 0.98,
+        "value": 1
+      },
+      "mineral_quality": {
+        "metric": "mae",
+        "passed": true,
+        "threshold": 0.03,
+        "value": 0.00404
+      },
+      "thermal_global_class": {
+        "metric": "pixel_agreement",
+        "passed": true,
+        "threshold": 0.99,
+        "value": 0.99965
+      },
+      "thermal_hotspots": {
+        "metric": "pixel_agreement",
+        "passed": true,
+        "threshold": 0.99,
+        "value": 0.99775
+      },
+      "thermal_local_anomaly": {
+        "metric": "pixel_agreement",
+        "passed": true,
+        "threshold": 0.99,
+        "value": 0.99978
+      },
+      "thermal_real_scene_min": {
+        "metric": "pixel_agreement",
+        "passed": true,
+        "threshold": 0.98,
+        "value": 0.98808,
+        "worst": "tulare_farms/thermal_hotspots"
+      },
+      "thermal_uhi_class": {
+        "metric": "pixel_agreement",
+        "passed": true,
+        "threshold": 0.99,
+        "value": 0.9984
+      }
+    },
+    "landsat_real": [
+      {
+        "acquired_at": "2024-09-30T18:39:43.070080Z",
+        "agreement": {
+          "thermal_global_class": 0.9992678889737713,
+          "thermal_hotspots": 0.9997665732959851,
+          "thermal_local_anomaly": 0.9999575587810882,
+          "thermal_uhi_class": 0.9996923011628894
+        },
+        "landsat_id": "LC08_L2SP_043034_20240930_02_T1",
+        "lst_c_p5_p95": [
+          36.4,
+          43.4
+        ],
+        "scene": "fresno_city",
+        "shape": [
+          306,
+          308
+        ],
+        "uhi_intensity_classical_c": 5.7,
+        "uhi_intensity_nn_c": 5.7
+      },
+      {
+        "acquired_at": "2024-02-28T18:34:06.538988Z",
+        "agreement": {
+          "thermal_global_class": 0.9995258314115136,
+          "thermal_hotspots": 0.9994535519125683,
+          "thermal_local_anomaly": 0.9998071359691417,
+          "thermal_uhi_class": 0.9989977800288812
+        },
+        "landsat_id": "LC08_L2SP_042035_20240228_02_T1",
+        "lst_c_p5_p95": [
+          22.2,
+          27.3
+        ],
+        "scene": "fresno_winter",
+        "shape": [
+          305,
+          306
+        ],
+        "uhi_intensity_classical_c": 4.17,
+        "uhi_intensity_nn_c": 4.17
+      },
+      {
+        "acquired_at": "2024-08-30T18:33:53.353894Z",
+        "agreement": {
+          "thermal_global_class": 0.9997428148910178,
+          "thermal_hotspots": 0.9996999507061874,
+          "thermal_local_anomaly": 0.9999142716303393,
+          "thermal_uhi_class": 0.9995177779206584
+        },
+        "landsat_id": "LC09_L2SP_042035_20240830_02_T1",
+        "lst_c_p5_p95": [
+          43.1,
+          52.2
+        ],
+        "scene": "bakersfield_oil",
+        "shape": [
+          302,
+          309
+        ],
+        "uhi_intensity_classical_c": 7.81,
+        "uhi_intensity_nn_c": 7.8
+      },
+      {
+        "acquired_at": "2024-09-29T18:45:35.078619Z",
+        "agreement": {
+          "thermal_global_class": 0.999841165392208,
+          "thermal_hotspots": 0.9998423334647221,
+          "thermal_local_anomaly": 0.999943690523115,
+          "thermal_uhi_class": 0.9992171722901682
+        },
+        "landsat_id": "LC09_L2SP_044033_20240929_02_T1",
+        "lst_c_p5_p95": [
+          27.7,
+          36.9
+        ],
+        "scene": "sacramento",
+        "shape": [
+          301,
+          295
+        ],
+        "uhi_intensity_classical_c": 7.82,
+        "uhi_intensity_nn_c": 7.81
+      },
+      {
+        "acquired_at": "2024-07-29T18:33:34.994113Z",
+        "agreement": {
+          "thermal_global_class": 0.9998709968716741,
+          "thermal_hotspots": 0.9880779608905516,
+          "thermal_local_anomaly": 0.9991184786231067,
+          "thermal_uhi_class": 0.9935820943657884
+        },
+        "landsat_id": "LC09_L2SP_042035_20240729_02_T1",
+        "lst_c_p5_p95": [
+          30.4,
+          49.2
+        ],
+        "scene": "tulare_farms",
+        "shape": [
+          303,
+          307
+        ],
+        "uhi_intensity_classical_c": 17.06,
+        "uhi_intensity_nn_c": 17.02
+      },
+      {
+        "acquired_at": "2024-09-30T18:39:43.070080Z",
+        "agreement": {
+          "thermal_global_class": 0.9996357615894039,
+          "thermal_hotspots": 0.9997902869757175,
+          "thermal_local_anomaly": 0.9999779249448124,
+          "thermal_uhi_class": 0.9994701986754967
+        },
+        "landsat_id": "LC08_L2SP_043034_20240930_02_T1",
+        "lst_c_p5_p95": [
+          33,
+          41.5
+        ],
+        "scene": "modesto",
+        "shape": [
+          302,
+          300
+        ],
+        "uhi_intensity_classical_c": 6.74,
+        "uhi_intensity_nn_c": 6.73
+      }
+    ],
+    "model_version": "v1"
+  },
+  "promoted_at": "2026-11-10T09:49:44.246032Z",
+  "version": "v1"
+}
