@@ -13,7 +13,10 @@ export default function History() {
   const load = (before) => api.jobs(before).then((r) => {
     setJobs((cur) => (before ? [...(cur || []), ...(r.jobs || [])] : (r.jobs || [])))
     setNext(r.next_before || null)
-  }).catch((e) => setError(e.message))
+  }).catch((e) => {
+    setError(e.message)
+    if (isPublic) setJobs([])
+  })
   useEffect(() => { load() }, [])
   return (
     <div className="page"><div className="page-narrow">

@@ -27,7 +27,7 @@ export function coversBox(geometry, b) {
 
 // Scenes covering the box, clearest first then newest (the order ingestion picks in).
 export function scenesCovering(coverage, bbox) {
-  if (!coverage || !bbox) return []
+  if (!coverage || !Array.isArray(coverage.features) || !bbox) return []
   return coverage.features
     .filter((f) => coversBox(f.geometry, bbox))
     .map((f) => f.properties)

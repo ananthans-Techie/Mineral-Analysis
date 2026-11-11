@@ -41,7 +41,9 @@ export default function Workspace() {
     if (id) return undefined
     let live = true
     const t = setTimeout(() => {
-      api.coverage(dates[0], dates[1]).then((c) => live && setCoverage(c)).catch(() => live && setCoverage(null))
+      api.coverage(dates[0], dates[1])
+        .then((c) => live && setCoverage(c && Array.isArray(c.features) ? c : null))
+        .catch(() => live && setCoverage(null))
     }, 250)
     return () => { live = false; clearTimeout(t) }
   }, [id, dates])

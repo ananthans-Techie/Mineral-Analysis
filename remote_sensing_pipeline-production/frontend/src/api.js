@@ -174,7 +174,7 @@ export const api = {
   cancelJob: (id) => request('DELETE', `/jobs/${encodeURIComponent(id)}`),
   layers: (id) => request('GET', `/jobs/${encodeURIComponent(id)}/layers`),
   coverage: (dateFrom, dateTo) =>
-    request('GET', `/coverage?date_from=${dateFrom}&date_to=${dateTo}`).catch(() => []),
+    request('GET', `/coverage?date_from=${dateFrom}&date_to=${dateTo}`).catch(() => null),
   stats: () => request('GET', '/stats').catch(() => null),
   devLogin: () =>
     raw('POST', '/auth/dev-login', { headers: CSRF })

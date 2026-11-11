@@ -112,8 +112,9 @@ function dimRings(region, area) {
 }
 
 function CoverageLegend({ coverage, show, setShow }) {
+  if (!coverage || !Array.isArray(coverage.features)) return null
   const n = coverage.features.length
-  const staged = coverage.features.filter((f) => f.properties.staged).length
+  const staged = coverage.features.filter((f) => f.properties?.staged).length
   const isPhone = useMediaQuery(PHONE)   // phones: start collapsed, the map comes first
   return (
     <details className="coverage-legend card" aria-label="EMIT coverage" open={!isPhone}>
@@ -156,10 +157,11 @@ export default function AreaMap({ region, maxDeg, bbox, onBbox, drawing, setDraw
   const [base, setBase] = useState('imagery')
   const [showCoverage, setShowCoverage] = useState(true)
   const renderer = useMemo(() => L.canvas({ padding: 0.5 }), [])
-  const coverKey = coverage ? `${coverage.date_from}|${coverage.date_to}|${coverage.features.length}` : ''
-  const dim = useMemo(() => (coverage ? dimRings(region, coverage.covered_area) : null), [coverage, region])
-  const staged = useMemo(() => (coverage
-    ? { type: 'FeatureCollection', features: coverage.features.filter((f) => f.properties.staged) } : null), [coverage])
+  const hasCoverage = Boolean(coverage && Array.isArray(coverage.features))
+  const coverKey = hasCoverage ? `${coverage.date_from || ''}|${coverage.date_to || ''}|${coverage.features.length}` : ''
+  const dim = useMemo(() => (hasCoverage && coverage.covered_area ? dimRings(region, coverage.covered_area) : null), [hasCoverage, coverage, region])
+  const staged = useMemo(() => (hasCoverage
+    ? { type: 'FeatureCollection', features: coverage.features.filter((f) => f.properties?.staged) } : null), [hasCoverage, coverage])
   const center = [(region[1] + region[3]) / 2, (region[0] + region[2]) / 2]
   const touch = useMediaQuery(COARSE)
   const stopDrawing = useCallback(() => { setDraft(null); setDrawing(false) }, [setDrawing])
@@ -196,7 +198,7 @@ export default function AreaMap({ region, maxDeg, bbox, onBbox, drawing, setDraw
           {base === 'imagery' ? 'Streets' : 'Imagery'}
         </button>
       </div>
-      {coverage && <CoverageLegend coverage={coverage} show={showCoverage} setShow={setShowCoverage} />}
+      {hasCoverage && <CoverageLegend coverage={coverage} show={showCoverage} setShow={setShowCoverage} />}
       {drawing && <div className="map-hint">{touch
         ? `Drag with one finger to draw a box (up to ${maxDeg}° per side).`
         : `Drag a box (up to ${maxDeg}° per side). Esc cancels.`}</div>}
