@@ -181,7 +181,7 @@ export const api = {
         const session = {
           connected: true,
           username: 'Earthdata Researcher',
-          expires_at: Math.floor(Date.now() / 1000) + 60 * 86400,
+          expires_at: new Date(Date.now() + 60 * 864e5).toISOString(),
           is_public_fallback: true,
         }
         try { localStorage.setItem('earthdata_session', JSON.stringify(session)) } catch { /* ignore */ }
