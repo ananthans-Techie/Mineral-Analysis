@@ -98,6 +98,22 @@ function Summary({ layers, result }) {
   )
 }
 
+export const MINERAL_PALETTE = {
+  alunite: '#e040fb',
+  calcite: '#00e5ff',
+  chlorite: '#2e7d32',
+  dolomite: '#0284c7',
+  goethite: '#d97706',
+  gypsum: '#f97316',
+  hematite: '#dc2626',
+  illite: '#3b82f6',
+  kaolinite: '#ec4899',
+  montmorillonite: '#8b5cf6',
+  muscovite: '#14b8a6',
+  quartz: '#eab308',
+  unknown: '#898781',
+}
+
 export default function ResultsPanel({ job, data, onOverlay, onRefresh }) {
   const task = 'mineral'
   const [layerName, setLayerName] = useState(null)
@@ -113,16 +129,23 @@ export default function ResultsPanel({ job, data, onOverlay, onRefresh }) {
   const layer = list.find((l) => l.name === layerName) || list[0]
   useEffect(() => { setLayerName(list[0]?.name || null); setHighlight(null) }, [list]) // eslint-disable-line
 
-  // Mineral highlight is drawn client-side from the class COG; everything else uses the PNG.
+  const effectivePalette = useMemo(() => {
+    if (layer?.name === 'mineral_class' && Array.isArray(layer.classes)) {
+      return layer.classes.map((name, i) => MINERAL_PALETTE[name] || layer.stats?.palette?.[i] || '#898781')
+    }
+    return layer?.stats?.palette || []
+  }, [layer])
+
+  // Client-side COG re-colouring: draws every mineral in its distinct colour
   useEffect(() => {
     let live = true
     setRendered(null)
-    if (layer?.name === 'mineral_class' && highlight) {
-      const idx = layer.classes.indexOf(highlight)
-      renderCategorical(layer.tif_url, layer.stats.palette, idx).then((url) => live && setRendered(url)).catch(() => {})
+    if (layer?.name === 'mineral_class' && layer.tif_url) {
+      const idx = highlight ? layer.classes.indexOf(highlight) : null
+      renderCategorical(layer.tif_url, effectivePalette, idx).then((url) => live && setRendered(url)).catch(() => {})
     }
     return () => { live = false }
-  }, [layer, highlight])
+  }, [layer, highlight, effectivePalette])
 
   useEffect(() => {
     onOverlay(layer ? [{ key: `${layer.task}/${layer.name}/${highlight || ''}/${rendered ? 1 : 0}`,
@@ -133,8 +156,8 @@ export default function ResultsPanel({ job, data, onOverlay, onRefresh }) {
   const result = data.results?.mineral || data.results?.[Object.keys(data.results || {})[0]]
   const acquired = job.acquired_emit || job.acquired_landsat
   const classRows = layer?.kind === 'categorical' ? (layer.classes || []).map((c, i) => ({
-    name: c, color: layer.stats.palette[i], fraction: layer.stats.class_fraction?.[c] || 0,
-    pixels: layer.stats.class_pixels?.[c], group: layer.stats.groups?.[c],
+    name: c, color: effectivePalette[i] || layer.stats?.palette?.[i] || '#898781', fraction: layer.stats?.class_fraction?.[c] || 0,
+    pixels: layer.stats?.class_pixels?.[c], group: layer.stats?.groups?.[c],
   })).filter((r) => r.color !== '#00000000').sort((a, b) => b.fraction - a.fraction) : []
 
   return (
@@ -166,13 +189,13 @@ export default function ResultsPanel({ job, data, onOverlay, onRefresh }) {
 
       <div>
         <h3>{layerLabel(layer?.name || '')}</h3>
-        <Legend layer={layer} />
+        <Legend layer={layer} palette={effectivePalette} />
       </div>
 
       {layer?.name === 'mineral_class' && (
         <label className="field">Highlight one mineral
           <select value={highlight || ''} onChange={(e) => setHighlight(e.target.value || null)}>
-            <option value="">All minerals (coloured by spectral group)</option>
+            <option value="">All minerals (distinct mineral colors)</option>
             {classRows.filter((r) => r.fraction > 0).map((r) => <option key={r.name} value={r.name}>{r.name} ({pct(r.fraction)})</option>)}
           </select>
         </label>

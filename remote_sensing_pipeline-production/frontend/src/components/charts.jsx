@@ -150,26 +150,23 @@ export function CompositionBars({ rows, onPick, picked }) {
 }
 
 // Legend for a map layer, built only from its metadata.
-export function Legend({ layer }) {
+export function Legend({ layer, palette }) {
   if (!layer) return null
   if (layer.kind === 'categorical') {
-    const pal = layer.stats?.palette || []
+    const pal = palette || layer.stats?.palette || []
     const frac = layer.stats?.class_fraction || {}
-    const groups = layer.stats?.groups
-    if (layer.name === 'mineral_class' && groups) {   // colour = spectral group; list members under it
-      const present = (layer.classes || []).map((c, i) => ({ c, i })).filter(({ c }) => frac[c])
-      const byGroup = present.reduce((acc, x) => ({ ...acc, [groups[x.c]]: [...(acc[groups[x.c]] || []), x] }), {})
+    if (layer.name === 'mineral_class') {
+      const present = (layer.classes || [])
+        .map((c, i) => ({ name: c, color: pal[i] || '#898781', fraction: frac[c] || 0 }))
+        .filter((x) => x.fraction > 0)
+        .sort((a, b) => b.fraction - a.fraction)
       return (
         <div className="legend">
-          {Object.entries(byGroup).map(([g, members]) => (
-            <div key={g} style={{ marginBottom: 4 }}>
-              <div className="item"><span className="swatch" style={{ background: pal[members[0].i] }} />
-                <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{g}</strong></div>
-              {members.map(({ c }) => (
-                <div className="item" key={c} style={{ paddingLeft: 20 }}>
-                  <span style={{ flex: 1 }}>{c}</span><span className="num muted">{pct(frac[c])}</span>
-                </div>
-              ))}
+          {present.map((item) => (
+            <div className="item" key={item.name} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <span className="swatch" style={{ background: item.color, width: 12, height: 12, borderRadius: 2, display: 'inline-block' }} />
+              <strong style={{ color: 'var(--text-primary)', fontWeight: 500, flex: 1, textTransform: 'capitalize' }}>{item.name}</strong>
+              <span className="num secondary">{pct(item.fraction)}</span>
             </div>
           ))}
         </div>

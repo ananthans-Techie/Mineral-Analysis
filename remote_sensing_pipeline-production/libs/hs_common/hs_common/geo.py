@@ -23,19 +23,34 @@ SLOT = {"blue": "#2a78d6", "orange": "#eb6834", "aqua": "#1baf7a"}
 NO_IDENTITY = "#898781"                      # muted gray: "unknown"
 TRANSPARENT = "#00000000"
 
-# Minerals are coloured by spectral group; each mineral stays identifiable by
-# the legend, the highlight control, the pixel inspector and the table.
+# Individual distinct colors for each USGS reference mineral
+MINERAL_COLORS = {
+    "alunite": "#e040fb",          # Vibrant Magenta
+    "calcite": "#00e5ff",          # Bright Cyan
+    "chlorite": "#2e7d32",         # Forest Green
+    "dolomite": "#0284c7",         # Deep Cerulean Blue
+    "goethite": "#d97706",         # Ochre Brown
+    "gypsum": "#f97316",           # Bright Orange
+    "hematite": "#dc2626",         # Deep Crimson Red
+    "illite": "#3b82f6",           # Royal Blue
+    "kaolinite": "#ec4899",        # Rose Pink
+    "montmorillonite": "#8b5cf6",  # Violet
+    "muscovite": "#14b8a6",        # Teal
+    "quartz": "#eab308",           # Bright Gold / Sand Yellow
+    "unknown": "#898781",          # Muted Gray
+}
+
+# Group metadata kept for reference and categorization
 MINERAL_GROUPS = {
-    "Al-OH clays & micas": ("blue", ["alunite", "illite", "kaolinite", "montmorillonite", "muscovite"]),
+    "Al-OH clays & micas": ("magenta", ["alunite", "illite", "kaolinite", "montmorillonite", "muscovite"]),
     "Fe-bearing": ("orange", ["chlorite", "goethite", "hematite"]),
     "Carbonates, sulfates & silica": ("aqua", ["calcite", "dolomite", "gypsum", "quartz"]),
 }
 
 
 def mineral_palette(classes):
-    """Colour per mineral class index (last class = unknown)."""
-    colour = {m: SLOT[c] for c, members in MINERAL_GROUPS.values() for m in members}
-    return [colour.get(name, NO_IDENTITY) for name in classes]
+    """Distinct color per mineral class index (last class = unknown)."""
+    return [MINERAL_COLORS.get(name, NO_IDENTITY) for name in classes]
 
 
 def mineral_group_of(name):
